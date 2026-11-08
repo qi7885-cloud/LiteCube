@@ -767,7 +767,8 @@
       '#bar{position:fixed;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;max-width:94%;z-index:5}\n' +
       '#bar button{background:rgba(29,32,41,.9);color:#d9dde8;border:1px solid #2c3140;border-radius:999px;padding:6px 16px;font-size:13px;cursor:pointer;white-space:nowrap}\n' +
       '#bar button:hover{border-color:#4da3ff}\n' +
-      '#bar .brand{color:#8b91a3;font-size:12px}\n' +
+      '#bar .brand{color:#8b91a3;font-size:12px;text-decoration:none}\n' +
+      '#bar .brand:hover{color:#d9dde8}\n' +
       '@media (max-width:640px){ #bar .brand{display:none} #tip{width:92%;text-align:center} }\n' +
       '#toasts{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:9;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}\n' +
       '.t{background:rgba(67,209,124,.95);color:#08320f;border-radius:999px;padding:8px 20px;font-size:15px;font-weight:600;animation:pop .3s ease}\n' +
@@ -776,7 +777,7 @@
       '</style>\n' +
       '<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}<\/script>\n';
     return head +
-      '<body>\n<canvas id="cv"></canvas>\n<div id="loading" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1a1d26;color:#8b91a3;font-family:system-ui;z-index:30;flex-direction:column;gap:10px"><div style="font-size:34px">🧊</div><div>正在加载 3D 作品…</div></div>\n<div id="bar"><button id="replay">▶ 重播动画</button><button id="remix">🎨 做同款</button><button id="fs">⛶ 全屏</button><span class="brand">🧊 ' + title + ' · 由轻立方 LiteCube 制作</span></div>\n' +
+      '<body>\n<canvas id="cv"></canvas>\n<div id="loading" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1a1d26;color:#8b91a3;font-family:system-ui;z-index:30;flex-direction:column;gap:10px"><div style="font-size:34px">🧊</div><div>正在加载 3D 作品…</div></div>\n<div id="bar"><button id="replay">▶ 重播动画</button><button id="remix">🎨 做同款</button><button id="fs">⛶ 全屏</button><a class="brand" href="https://litecube.netlify.app/" target="_blank" rel="noopener">🧊 ' + title + ' · 由轻立方 LiteCube 制作</a></div>\n' +
       '<div id="toasts"></div>\n<div id="tip">拖动旋转视角 · 滚轮缩放 · 点一点场景里的物体</div>\n' +
       '<script type="application/json" id="work-data">' + dataJson + '<\/script>\n' +
       '<script type="module">\n' +
