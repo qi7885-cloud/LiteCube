@@ -574,7 +574,7 @@
     const start = function () { App._doGIF(); };
     if (!window.GIF) {
       const s = document.createElement('script');
-      s.src = (window.__THREE_BASE__ && window.__THREE_BASE__.indexOf('http') !== 0 ? '../lib/gif/gif.js' : 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js');
+      s.src = (window.__THREE_BASE__ && window.__THREE_BASE__.indexOf('http') !== 0 ? './lib/gif/gif.js' : 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js');
       s.onload = start;
       s.onerror = function () { App.toast('GIF 编码器加载失败，请检查网络', 'err'); };
       document.head.appendChild(s);
@@ -586,7 +586,7 @@
   App._doGIF = function () {
     if (!App.entries.some(App.entryHasAnim)) { App.toast('还没有动画可录', 'warn'); return; }
     /* worker 脚本必须同源：取回脚本文本包成 Blob URL（本地库/CDN 均可） */
-    const workerSrc = (window.__THREE_BASE__ && window.__THREE_BASE__.indexOf('http') !== 0 ? '../lib/gif/gif.worker.js' : 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
+    const workerSrc = (window.__THREE_BASE__ && window.__THREE_BASE__.indexOf('http') !== 0 ? './lib/gif/gif.worker.js' : 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
     fetch(workerSrc).then(function (r) { return r.text(); }).then(function (workerText) {
       const wurl = URL.createObjectURL(new Blob([workerText], { type: 'text/javascript' }));
       const srcCanvas = App.three.renderer.domElement;
@@ -724,14 +724,14 @@
         rules.push({ name: e.name, event: r.event, action: r.action, value: r.value, clip: r.clip || '' });
       });
     });
-    /* 完整工程数据随发布页内嵌，观众可「做同款」 */
-    const proj = buildProjectData();
+    /* 「做同款」已改为引导观众到 GitHub 仓库；发布页只内嵌作品 glb，不再内嵌完整工程（体积减半） */
     App.setSpotBeamsVisible(false);   /* 光束锥不进发布产物 */
     exporter.parse(App.three.userRoot, function (glb) {
       App.setSpotBeamsVisible(true);
       const b64 = App.bufToB64(glb);
       const data = JSON.stringify({
         title: name, glb: b64, rules: rules, hasAnim: clips.length > 0,
+        clipNames: App.clips.reduce(function (m, c) { m[c.id] = c.name; return m; }, {}),
         settings: {
           bg: '#' + App.three.scene.background.getHexString(),
           camera: {
@@ -739,7 +739,6 @@
             t: App.three.controls.target.toArray(),
           },
         },
-        project: proj.data,
         link: App._publishLink || '',
       }).replace(/</g, '\\u003c');
       App.download(buildPublishHTML(data, name), name + '.html', 'text/html');
@@ -839,6 +838,7 @@
     "const actions = gltf.animations.map(c => mixer.clipAction(c));",
     "actions.forEach(a => { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; });",
     "const actionsByName = {}; actions.forEach(a => { actionsByName[a.getClip().name] = a; });",
+    "const clipNameOf = id => (data.clipNames && data.clipNames[id]) || id;",
     "function playAll(){ actions.forEach(a => { a.reset(); a.play(); }); }",
     "if (actions.length) playAll();",
     "const byName = {};",
@@ -862,7 +862,7 @@
     "    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + s.d);",
     "    osc.connect(g).connect(actx.destination); osc.start(); osc.stop(actx.currentTime + s.d + 0.02); } catch (e) {} }",
     "function doAction(node, r){",
-    "  if (r.action === 'anim'){ const target = r.clip ? actionsByName[r.clip] : null; if (target) { target.reset(); target.play(); } else playAll(); }",
+    "  if (r.action === 'anim'){ const target = r.clip ? (actionsByName[clipNameOf(r.clip)] || actionsByName[r.clip]) : null; if (target) { target.reset(); target.play(); } else playAll(); }",
     "  else if (r.action === 'color') tweenColor(node, r.value || '#ff5555');",
     "  else if (r.action === 'message') toast(r.value || '你好！');",
     "  else if (r.action === 'toggle') node.visible = !node.visible;",
@@ -896,7 +896,7 @@
     "  const n = nodeOf(o); if (n) byName[n.name].forEach(r => { if (r.event === 'dblclick') doAction(n, r); }); });",
     "canvas.addEventListener('pointermove', ev => { const o = hitTest(ev); const n = o ? nodeOf(o) : null;",
     "  canvas.style.cursor = o ? 'pointer' : '';",
-    "  if (n !== hovered){ if (hovered && byName[hovered.name]) byName[hovered.name].forEach(r => { if (r.event === 'hover') doAction(hovered, r); }); hovered = n; } });",
+    "  if (n !== hovered){ if (n && byName[n.name]) byName[n.name].forEach(r => { if (r.event === 'hover') doAction(n, r); }); hovered = n; } });",
     "Object.keys(byName).forEach(name => { const n = model.getObjectByName(name);",
     "  if (n) byName[name].forEach(r => { if (r.event === 'load') doAction(n, r); }); });",
     "document.getElementById('replay').addEventListener('click', playAll);",

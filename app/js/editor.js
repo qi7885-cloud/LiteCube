@@ -87,12 +87,11 @@
       if (App.autoKey && App.selected) App.setAutoKeys(App.selected);
     });
     tctrl.addEventListener('mouseUp', () => {
-      /* 多选整体拖动结束后：先回写世界变换，再重建枢轴，最后记录撤销 */
-      if (App._multiPivotActive && App._multiPivotActive()) {
-        App._teardownMultiPivot();
-        App._setupMultiPivot();
-      }
+      /* 多选整体拖动结束后：先拆枢轴回写世界变换 → 记录撤销（此时坐标才是 userRoot 局部）→ 再重建枢轴 */
+      const multi = App._multiPivotActive && App._multiPivotActive();
+      if (multi) App._teardownMultiPivot();
       App.commitUndo && App.commitUndo();
+      if (multi) App._setupMultiPivot();
     });
 
     /* 尺寸自适应 */
