@@ -777,13 +777,6 @@
       '<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}<\/script>\n';
     return head +
       '<body>\n<canvas id="cv"></canvas>\n<div id="loading" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1a1d26;color:#8b91a3;font-family:system-ui;z-index:30;flex-direction:column;gap:10px"><div style="font-size:34px">🧊</div><div>正在加载 3D 作品…</div></div>\n<div id="bar"><button id="replay">▶ 重播动画</button><button id="remix">🎨 做同款</button><button id="fs">⛶ 全屏</button><span class="brand">🧊 ' + title + ' · 由轻立方 LiteCube 制作</span></div>\n' +
-      '<div id="remix-guide" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;align-items:center;justify-content:center">\n' +
-      '<div style="width:min(420px,90%);background:#1d2029;border:1px solid #2c3140;border-radius:16px;padding:24px;color:#d9dde8;font-family:system-ui;text-align:left">\n' +
-      '<div style="font-size:18px;font-weight:700;margin-bottom:10px">🎨 同款工程已下载！</div>\n' +
-      '<div style="font-size:13.5px;line-height:2;color:#c8cdd8">两步改成你的作品：<br><b style="color:#4da3ff">1.</b> 打开「轻立方 LiteCube」编辑器<br><b style="color:#4da3ff">2.</b> 点顶部「📂 打开工程」，选择刚下载的 <b>.lcz.json</b> 文件<br><span style="color:#8b91a3;font-size:12px">然后随便改：换模型、改颜色、做动画、加交互，再发布你的版本！</span></div>\n' +
-      '<div style="margin-top:10px;font-size:12.5px;color:#c8cdd8">喜欢这个编辑器？去 <a href="https://github.com/qi7885-cloud/LiteCube" target="_blank" style="color:#4da3ff">GitHub 仓库</a> 点个 Star ⭐ 支持一下</div>' +
-      '<div style="margin-top:16px;display:flex;gap:8px"><button id="rg-ok" style="flex:1;background:linear-gradient(135deg,#3b82f6,#4da3ff);border:none;color:#fff;border-radius:999px;padding:10px;font-weight:600;cursor:pointer">知道啦</button></div>\n' +
-      '</div></div>\n' +
       '<div id="toasts"></div>\n<div id="tip">拖动旋转视角 · 滚轮缩放 · 点一点场景里的物体</div>\n' +
       '<script type="application/json" id="work-data">' + dataJson + '<\/script>\n' +
       '<script type="module">\n' +
@@ -906,17 +899,8 @@
     "Object.keys(byName).forEach(name => { const n = model.getObjectByName(name);",
     "  if (n) byName[name].forEach(r => { if (r.event === 'load') doAction(n, r); }); });",
     "document.getElementById('replay').addEventListener('click', playAll);",
-    "if (!data.project) document.getElementById('remix').style.display = 'none';",
     "document.getElementById('remix').addEventListener('click', function(){",
-    "  const blob = new Blob([JSON.stringify(data.project)], { type: 'application/json' });",
-    "  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);",
-    "  a.download = (data.title || '我的3D作品') + '.lcz.json';",
-    "  document.body.appendChild(a); a.click();",
-    "  window.open('https://github.com/qi7885-cloud/LiteCube', '_blank');",
-    "  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);",
-    "  document.getElementById('remix-guide').style.display = 'flex'; });",
-    "document.getElementById('rg-ok').addEventListener('click', function(){",
-    "  document.getElementById('remix-guide').style.display = 'none'; });",
+    "  window.open('https://github.com/qi7885-cloud/LiteCube', '_blank'); });",
     "if ('ontouchstart' in window) document.getElementById('tip').textContent = '单指拖动转视角 · 双指缩放平移 · 点一点场景里的物体';",
     "if (data.link){ const more = document.createElement('button');",
     "  more.textContent = '🔗 了解更多';",
