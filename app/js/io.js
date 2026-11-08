@@ -781,6 +781,7 @@
       '<div style="width:min(420px,90%);background:#1d2029;border:1px solid #2c3140;border-radius:16px;padding:24px;color:#d9dde8;font-family:system-ui;text-align:left">\n' +
       '<div style="font-size:18px;font-weight:700;margin-bottom:10px">🎨 同款工程已下载！</div>\n' +
       '<div style="font-size:13.5px;line-height:2;color:#c8cdd8">两步改成你的作品：<br><b style="color:#4da3ff">1.</b> 打开「轻立方 LiteCube」编辑器<br><b style="color:#4da3ff">2.</b> 点顶部「📂 打开工程」，选择刚下载的 <b>.lcz.json</b> 文件<br><span style="color:#8b91a3;font-size:12px">然后随便改：换模型、改颜色、做动画、加交互，再发布你的版本！</span></div>\n' +
+      '<div style="margin-top:10px;font-size:12.5px;color:#c8cdd8">喜欢这个编辑器？去 <a href="https://github.com/qi7885-cloud/LiteCube" target="_blank" style="color:#4da3ff">GitHub 仓库</a> 点个 Star ⭐ 支持一下</div>' +
       '<div style="margin-top:16px;display:flex;gap:8px"><button id="rg-ok" style="flex:1;background:linear-gradient(135deg,#3b82f6,#4da3ff);border:none;color:#fff;border-radius:999px;padding:10px;font-weight:600;cursor:pointer">知道啦</button></div>\n' +
       '</div></div>\n' +
       '<div id="toasts"></div>\n<div id="tip">拖动旋转视角 · 滚轮缩放 · 点一点场景里的物体</div>\n' +
@@ -911,6 +912,7 @@
     "  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);",
     "  a.download = (data.title || '我的3D作品') + '.lcz.json';",
     "  document.body.appendChild(a); a.click();",
+    "  window.open('https://github.com/qi7885-cloud/LiteCube', '_blank');",
     "  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);",
     "  document.getElementById('remix-guide').style.display = 'flex'; });",
     "document.getElementById('rg-ok').addEventListener('click', function(){",
