@@ -387,28 +387,6 @@
       App.updatePlayUI();
     });
 
-    $('#btn-feedback').addEventListener('click', function () { $('#fb-modal').classList.remove('hidden'); });
-    $('#fb-close').addEventListener('click', function () { $('#fb-modal').classList.add('hidden'); });
-    $('#fb-cancel').addEventListener('click', function () { $('#fb-modal').classList.add('hidden'); });
-    $('#fb-export').addEventListener('click', function () {
-      const text = ($('#fb-text').value || '').trim();
-      if (!text) { App.toast('先写点什么再导出哦', 'warn'); return; }
-      const payload = {
-        app: 'litecube', version: 'v1.5',
-        time: new Date().toISOString(),
-        ua: navigator.userAgent,
-        sceneObjects: App.entries.length,
-        message: text,
-      };
-      App.download(JSON.stringify(payload, null, 2), '轻立方反馈-' + Date.now() + '.json', 'application/json');
-      $('#fb-text').value = '';
-      $('#fb-modal').classList.add('hidden');
-      App.toast('反馈已导出，谢谢你 💙');
-    });
-    $('#fb-modal').addEventListener('click', function (ev) {
-      if (ev.target.id === 'fb-modal') ev.target.classList.add('hidden');
-    });
-
     $('#btn-help').addEventListener('click', function () { $('#modal').classList.remove('hidden'); });
     $('#modal-close').addEventListener('click', function () { $('#modal').classList.add('hidden'); });
     $('#modal').addEventListener('click', function (ev) {

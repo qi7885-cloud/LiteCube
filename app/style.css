@@ -456,11 +456,9 @@ body.preview-full #tg-right { display: none !important; }
 #ctx-menu button.danger { color: var(--danger); }
 #ctx-menu button.danger:hover { background: rgba(255,92,108,.15); }
 
-#fb-modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 110; display: flex; align-items: center; justify-content: center; }
-#fb-modal.hidden { display: none; }
-#fb-box { width: 460px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
-#fb-box .btn-row button { padding: 10px; }
-/* 发布弹窗：与反馈弹窗同款居中遮罩（此前缺失样式，面板裸排在左下角） */
+/* 发布弹窗：居中遮罩 + 弹窗盒（此前缺失样式，面板裸排在左下角） */
+#pubm-box { width: 460px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+#pubm-box .btn-row button { padding: 10px; }
 #pub-modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 110; display: flex; align-items: center; justify-content: center; }
 
 ::-webkit-scrollbar { width: 9px; height: 9px; }

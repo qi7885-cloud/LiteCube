@@ -53,7 +53,6 @@
         <label class="chk menu-chk"><input type="checkbox" id="scene-shadow" checked> 显示阴影</label>
         <button class="menu-chk" id="btn-screenshot" data-icon="screenshot" style="text-align:left">保存画面截图</button>
       </div>
-      <button id="btn-feedback" class="tb" data-icon="feedback" title="告诉我们哪里不顺手，或想要什么功能">反馈</button>
       <button id="btn-help" class="tb" data-icon="help" title="3D 小词典与快捷键">词典</button>
     </div>
   </header>
@@ -367,7 +366,7 @@
 
   <!-- ═══════════ 发布命名弹窗 ═══════════ -->
   <div id="pub-modal" class="hidden">
-    <div id="fb-box">
+    <div id="pubm-box">
       <div class="modal-head"><b data-icon="publish">发布互动网页</b><button id="pubm-close">✕</button></div>
       <div class="modal-body">
         <p style="color:var(--muted);font-size:12px">给作品起个名字——它会成为文件名和页面标题。</p>
@@ -377,21 +376,6 @@
         <div class="btn-row">
           <button id="pubm-go" style="flex:1.5;background:linear-gradient(135deg,#3b82f6,#4da3ff);border:none;color:#fff;font-weight:600">🚀 开始发布</button>
           <button id="pubm-cancel">取消</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════ 反馈弹窗 ═══════════ -->
-  <div id="fb-modal" class="hidden">
-    <div id="fb-box">
-      <div class="modal-head"><b>💬 告诉我们</b><button id="fb-close">✕</button></div>
-      <div class="modal-body">
-        <p style="color:var(--muted);font-size:12px">哪里不顺手？想要什么功能？写下来，点下面的按钮会导出一个反馈文件，发给我们即可。</p>
-        <textarea id="fb-text" rows="5" placeholder="例如：我想让物体还能发光变颜色……" style="width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px;font:inherit;resize:vertical"></textarea>
-        <div class="btn-row">
-          <button id="fb-export" style="flex:1.5;background:linear-gradient(135deg,#3b82f6,#4da3ff);border:none;color:#fff;font-weight:600">⬇ 导出反馈文件</button>
-          <button id="fb-cancel">取消</button>
         </div>
       </div>
     </div>
