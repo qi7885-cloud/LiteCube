@@ -1,0 +1,8 @@
+# 本机快照与内部工具状态不入库
+版本/
+.mimosa/
+__test.html
+*.log
+node_modules/
+.DS_Store
+Thumbs.db
