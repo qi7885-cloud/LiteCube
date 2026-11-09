@@ -22,6 +22,7 @@
         transparent: !!m.transparent,
         emissive: m.emissive ? m.emissive.getHex() : null,
         emissiveIntensity: m.emissiveIntensity != null ? m.emissiveIntensity : null,
+        map: m.map || null,   /* 贴图走引用快照：撤销/重做可回到贴图应用前 */
       };
     });
   }
@@ -48,6 +49,7 @@
       if (s.opacity != null) { m.opacity = s.opacity; m.transparent = s.transparent; m.depthWrite = !s.transparent; }
       if (s.emissive != null && m.emissive) m.emissive.setHex(s.emissive);
       if (s.emissiveIntensity != null) m.emissiveIntensity = s.emissiveIntensity;
+      if (s.map !== undefined) { m.map = s.map || null; }   /* 贴图引用还原（null = 无贴图） */
       m.needsUpdate = true;
     });
   }
@@ -57,6 +59,7 @@
       selectedId: App.selected ? App.selected.id : null,
       clips: JSON.parse(JSON.stringify(App.clips)),
       activeClipId: App.activeClipId,
+      assets: App.assets,   /* 引用快照：clearScene 等是整体换对象，撤销可原样找回 */
       entries: App.entries.map(function (e) {
         const o = e.object3D;
         const inPivot = !!(App._multiPivotActive && App._multiPivotActive());
@@ -87,6 +90,7 @@
       }
     });
     App.entries = st.entries.map(function (item) { return item.entry; });
+    App.assets = st.assets || {};   /* 恢复资产引用：撤销"新建/清空/删除模型"后源模型不丢 */
     /* 动画片段列表与当前编辑动画一并还原 */
     App.clips = JSON.parse(JSON.stringify(st.clips || []));
     App.activeClipId = st.activeClipId || (App.clips[0] && App.clips[0].id) || null;
@@ -110,6 +114,7 @@
     App.duration = App.activeClip() ? App.activeClip().duration : 5;
     const sel = st.selectedId ? App.entries.find(function (e) { return e.id === st.selectedId; }) : null;
     App.select(sel, true);
+    App.emit('multiselection');   /* 批量操作条随撤销同步显隐 */
     App.emit('entries');
     App.emit('tracks-changed');
     App.emit('clips-changed');
@@ -129,16 +134,20 @@
 
   App.undo = function () {
     if (past.length < 2) { App.toast('没有可撤销的操作', 'warn', 1200); return; }
+    clearTimeout(App._nudgeTimer);   /* 取消未提交的方向键微移，避免污染重做栈 */
     future.push(past.pop());
     applyState(past[past.length - 1]);
     App._dirty = true;
+    if (App._scheduleAutosave) App._scheduleAutosave();
   };
 
   App.redo = function () {
     if (!future.length) { App.toast('没有可重做的操作', 'warn', 1200); return; }
+    clearTimeout(App._nudgeTimer);
     const st = future.pop();
     past.push(st);
     applyState(st);
     App._dirty = true;
+    if (App._scheduleAutosave) App._scheduleAutosave();
   };
 })();

@@ -53,6 +53,10 @@
         texB64s.push({ name: t.name, b64: App.bufToB64(t.buf) });
       });
       App.importOBJ(objText, mtlText, urlMap, objFile.name, { texB64s: texB64s });
+      /* 贴图 Blob URL 用完即回收（纹理加载完成后 Blob URL 不再被需要），防长会话累积 */
+      setTimeout(function () {
+        Object.keys(urlMap).forEach(function (k) { URL.revokeObjectURL(urlMap[k]); });
+      }, 30000);
     });
   };
 
@@ -137,9 +141,10 @@
     const loader = new (A()).GLTFLoader();
     /* Draco 压缩模型支持（本地库与 CDN 均已配置解码器路径） */
     try {
-      const draco = new (A()).DRACOLoader();
-      draco.setDecoderPath((window.__THREE_BASE__ || './lib/three/') + 'examples/jsm/libs/draco/');
-      loader.setDRACOLoader(draco);
+      /* DRACOLoader 单例复用：每次导入新建会累积解码 worker */
+      App._dracoLoader = App._dracoLoader || new (A()).DRACOLoader();
+      App._dracoLoader.setDecoderPath((window.__THREE_BASE__ || './lib/three/') + 'examples/jsm/libs/draco/');
+      loader.setDRACOLoader(App._dracoLoader);
     } catch (e) { /* 解码器不可用时按普通模型处理 */ }
     loader.parse(buffer, '', function (gltf) {
       const root = gltf.scene;
@@ -159,11 +164,12 @@
       /* 大模型自动降阴影：保持流畅（场景菜单可重新打开） */
       let meshCount = 0;
       root.traverse(function (o) { if (o.isMesh) meshCount++; });
-      if (meshCount > 60 && App.three.renderer.shadowMap.enabled) {
+      if (meshCount > 60 && App.three.renderer.shadowMap.enabled && !opts.quiet) {
+        /* 仅在用户主动导入时自动降阴影；打开工程不覆盖作者保存的阴影设置 */
         App.setShadows(false);
         const sh = document.querySelector('#scene-shadow');
         if (sh) sh.checked = false;
-        if (!opts.quiet) App.toast('模型较复杂（' + meshCount + ' 个部件），已自动关闭阴影保持流畅；可在「⚙️ 场景」重新打开', '', 4500);
+        App.toast('模型较复杂（' + meshCount + ' 个部件），已自动关闭阴影保持流畅；可在「⚙️ 场景」重新打开', '', 4500);
       }
       if (!opts.quiet) {
         App.select(entry);
@@ -352,9 +358,15 @@
         t: App.three.controls.target.toArray(),
       },
     };
-    /* 资产集中区：每个模型只存一份，条目里只放引用 */
+    /* 资产集中区：每个模型只存一份，条目里只放引用；已删模型的资产不再随工程携带 */
+    const usedKeys = {};
+    App.entries.forEach(function (entry) {
+      const k = entry.object3D.userData && entry.object3D.userData.assetKey;
+      if (k) usedKeys[k] = true;
+    });
     data.assets = {};
     Object.keys(App.assets).forEach(function (key) {
+      if (!usedKeys[key]) return;   /* 场景里没有任何物体引用 → 不写入工程 */
       const asset = App.assets[key];
       if (!asset) return;
       const a = { fileName: asset.fileName };
@@ -834,6 +846,7 @@
     "scene.add(model);",
     "const billboards = [];",
     "model.traverse(o => { if (o.name === '__billboard_plane__') billboards.push(o); });",
+    "billboards.forEach(b => { if (b.parent) b.parent.quaternion.set(0, 0, 0, 1); });   /* 导出时组的朝向被烘焙，运行时归零组、由子面片各自面向相机，避免双重旋转 */",
     "const mixer = new THREE.AnimationMixer(model);",
     "const actions = gltf.animations.map(c => mixer.clipAction(c));",
     "actions.forEach(a => { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; });",

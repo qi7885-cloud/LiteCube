@@ -622,18 +622,18 @@
       if ((ev.ctrlKey || ev.metaKey) && k === 'z') { ev.preventDefault(); ev.shiftKey ? App.redo() : App.undo(); }
       else if ((ev.ctrlKey || ev.metaKey) && k === 'y') { ev.preventDefault(); App.redo(); }
       else if ((ev.ctrlKey || ev.metaKey) && k === 'd') { ev.preventDefault(); App.duplicateEntry(App.selected); }
-      else if (k === 'w') App.setGizmoMode('translate');
-      else if (k === 'e') App.setGizmoMode('rotate');
-      else if (k === 'r') App.setGizmoMode('scale');
-      else if (k === 'f') { if (App.selected) App.focusEntry(App.selected); }
+      else if (k === 'w' && !ev.ctrlKey && !ev.metaKey && !ev.altKey && !App.preview) App.setGizmoMode('translate');
+      else if (k === 'e' && !ev.ctrlKey && !ev.metaKey && !ev.altKey && !App.preview) App.setGizmoMode('rotate');
+      else if (k === 'r' && !ev.ctrlKey && !ev.metaKey && !ev.altKey && !App.preview) App.setGizmoMode('scale');
+      else if (k === 'f' && !ev.ctrlKey && !ev.metaKey && !ev.altKey && !App.preview) { if (App.selected) App.focusEntry(App.selected); }
       else if (ev.key === 'Delete' || ev.key === 'Backspace') { if (!App.preview) App.deleteEntry(App.selected); }
       else if (ev.key === ' ') { ev.preventDefault(); if (!App.preview) App.togglePlay(); }
       else if (ev.key === 'Escape') {
         App.hideContextMenu();
         if (App.preview) App.togglePreview(); else App.select(null);
       }
-      else if (ev.key.startsWith('Arrow') && App.selected && !App.preview) {
-        /* 方向键微移：一次 0.1 格，Shift 加速到 0.5 */
+      else if ((ev.key.startsWith('Arrow') || ev.key === 'PageUp' || ev.key === 'PageDown') && App.selected && !App.preview) {
+        /* 方向键微移：一次 0.1 格，Shift 加速到 0.5；PgUp/PgDn 升降。连按合并为一次撤销 */
         ev.preventDefault();
         const step = ev.shiftKey ? 0.5 : 0.1;
         const o = App.selected.object3D;
@@ -646,6 +646,9 @@
         App.three.boxHelper.update();
         App.setAutoKeys(App.selected);
         App.updateTransformPanel();
+        App._dirty = true;   /* 立即置脏：关页提醒不遗漏 */
+        clearTimeout(App._nudgeTimer);   /* 连按合并：停手 500ms 后记一次撤销 */
+        App._nudgeTimer = setTimeout(function () { App.commitUndo(); }, 500);
       }
     });
   }

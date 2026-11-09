@@ -74,6 +74,8 @@
     if (!entry) return;
     const THREE = T();
     const copy = entry.object3D.clone(true);
+    /* clone 会把 userData JSON 化导致内嵌动画 Clip 损坏——还原为原对象引用（Clip 只读共享，mixer 各自实例化） */
+    if (entry.object3D.userData.clips) copy.userData.clips = entry.object3D.userData.clips;
     copy.traverse(o => {
       if (o.isMesh) {
         o.material = Array.isArray(o.material) ? o.material.map(m => m.clone()) : o.material.clone();
@@ -459,7 +461,8 @@
       const btn = document.createElement('button');
       btn.className = 'fav-card';
       btn.title = '我收藏的模型（' + (f.fileName || f.name) + '）';
-      btn.innerHTML = '<i>📦</i><span>' + f.name + '</span><b class="fav-del" title="取消收藏">✕</b>';
+      btn.innerHTML = '<i>📦</i><span></span><b class="fav-del" title="取消收藏">✕</b>';
+      btn.querySelector('span').textContent = f.name;   /* 文件名可能含 <>，走 textContent 防注入 */
       btn.addEventListener('click', function (ev) {
         if (ev.target.classList.contains('fav-del')) { App.removeUserFav(idx); return; }
         App.addFavorite('user:' + idx);
@@ -767,7 +770,8 @@
       li.dataset.id = entry.id;
 
       const icon = App.el('span', 'tico', App.icon(entry.object3D.isSpotLight ? 'spot' : (entry.object3D.isLight ? 'bulb' : (entry.object3D.userData && entry.object3D.userData.primitive === 'label' ? 'label' : 'cube')), 14));
-      const name = App.el('span', 'name', entry.name);
+      const name = App.el('span', 'name');
+      name.textContent = entry.name;   /* 名称可能来自重命名输入，防注入 */
       const vis = App.el('span', 'vis' + (entry.object3D.visible ? '' : ' off'), App.icon(entry.object3D.visible ? 'eyeOn' : 'eyeOff', 17));
       vis.title = entry.object3D.visible ? '隐藏该物体' : '显示该物体';
 

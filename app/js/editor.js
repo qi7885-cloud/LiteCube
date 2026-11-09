@@ -93,6 +93,10 @@
       App.commitUndo && App.commitUndo();
       if (multi) App._setupMultiPivot();
     });
+    /* gizmo 交互期间（含点一下未拖动）不算场景点击，避免点箭头空白处误取消选中 */
+    let gizmoBusy = false;
+    tctrl.addEventListener('mouseDown', () => { gizmoBusy = true; });
+    tctrl.addEventListener('mouseUp', () => { setTimeout(function () { gizmoBusy = false; }, 0); });
 
     /* 尺寸自适应 */
     function resize() {
@@ -119,9 +123,10 @@
       ray.setFromCamera(ptr, camera);
       const hits = ray.intersectObjects(App.three.userRoot.children, true);
       for (const h of hits) {
+        /* 爬升到「带 entryId 的物体根」为止：多选枢轴激活时物体挂在 pivot 下也能正确解析 */
         let o = h.object;
-        while (o && o.parent !== App.three.userRoot) o = o.parent;
-        if (o) {
+        while (o && !o.userData.entryId && o.parent) o = o.parent;
+        if (o && o.userData.entryId) {
           const entry = App.entries.find(e => e.object3D === o);
           if (entry) return entry;
         }
@@ -135,7 +140,7 @@
       if (!downPos || downPos.b !== 0) { downPos = null; return; }
       const moved = Math.hypot(ev.clientX - downPos.x, ev.clientY - downPos.y);
       downPos = null;
-      if (moved > 6 || tctrl.dragging) return;              // 拖动视角/gizmo，不算点击
+      if (moved > 6 || tctrl.dragging || gizmoBusy) return;   // 拖动视角/gizmo（含点一下），不算点击
       const entry = pick(ev);
       if (App.preview) {
         if (entry) App.runRules(entry, 'click');

@@ -146,6 +146,7 @@
     tex.wrapT = THREE.RepeatWrapping;
     tex.repeat.set(texRepeat, texRepeat);
     App.entryMaterials(entry).forEach(function (m) {
+      if (m.map) m.map.dispose();   /* 撤销快照持引用可重新上传，GPU 旧份先释放 */
       m.map = tex;
       m.needsUpdate = true;
     });
@@ -240,6 +241,7 @@
     tex.wrapT = THREE.RepeatWrapping;
     tex.repeat.set(texRepeat, texRepeat);
     App.entryMaterials(entry).forEach(function (m) {
+      if (m.map) m.map.dispose();
       m.map = tex;
       m.needsUpdate = true;
     });
@@ -279,8 +281,10 @@
       if (s.emissiveIntensity != null) m.emissiveIntensity = s.emissiveIntensity;
       if (s.map) {
         s.map.repeat.set(texRepeat, texRepeat);
+        if (m.map && m.map !== s.map) m.map.dispose();
         m.map = s.map;
       } else {
+        if (m.map) m.map.dispose();
         m.map = null;
       }
       m.needsUpdate = true;

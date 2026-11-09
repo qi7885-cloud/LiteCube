@@ -37,7 +37,8 @@
   /* ---------- 提示气泡 ---------- */
   App.toast = function (msg, type = '', ms = 2600) {
     const box = App.$('#toasts');
-    const t = App.el('div', 'toast' + (type ? ' ' + type : ''), msg);
+    const t = App.el('div', 'toast' + (type ? ' ' + type : ''));
+    t.textContent = msg;   /* 提示文案可能含用户输入（文件名/规则语句），不走 innerHTML */
     box.appendChild(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 320); }, ms);
   };
