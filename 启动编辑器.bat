@@ -11,7 +11,7 @@ if %errorlevel%==0 (
   echo 正在启动轻立方（本地服务，关掉本窗口即退出）...
   echo 浏览器将自动打开 %URL%
   start "" cmd /c "timeout /t 1 >nul & start "" "%URL%""
-  python -m http.server %PORT% --bind 127.0.0.1
+  python "本地服务.py" %PORT%
   goto :eof
 )
 
@@ -20,7 +20,7 @@ if %errorlevel%==0 (
   echo 正在启动轻立方（本地服务，关掉本窗口即退出）...
   echo 浏览器将自动打开 %URL%
   start "" cmd /c "timeout /t 1 >nul & start "" "%URL%""
-  py -m http.server %PORT% --bind 127.0.0.1
+  py "本地服务.py" %PORT%
   goto :eof
 )
 
