@@ -386,14 +386,10 @@
     return entry;
   };
 
-  /* ---------- ⭐ 收藏：常用模型一键添加 ---------- */
+  /* ---------- ⭐ 收藏：常用模型一键添加 ----------
+     内置收藏只留组合模板里没有的 GLB 示例；雪人/桌子/小树/汽车/火箭/房子
+     与「添加」页的组合模板完全重复，已移除（组合模板那里可以直接加）。 */
   const FAVORITES = [
-    { id: 'fav-snowman', name: '雪人', icon: '⛄', kind: 'template', ref: 'snowman', tip: '多部件组合体' },
-    { id: 'fav-table', name: '桌子', icon: '🪵', kind: 'template', ref: 'table', tip: '多部件组合体' },
-    { id: 'fav-tree', name: '小树', icon: '🌲', kind: 'template', ref: 'tree', tip: '多部件组合体' },
-    { id: 'fav-car', name: '汽车', icon: '🚗', kind: 'template', ref: 'car', tip: '多部件组合体' },
-    { id: 'fav-rocket', name: '火箭', icon: '🚀', kind: 'template', ref: 'rocket', tip: '多部件组合体' },
-    { id: 'fav-house', name: '房子', icon: '🏠', kind: 'template', ref: 'house', tip: '多部件组合体' },
     { id: 'fav-tokyo', name: '小东京', icon: '🏮', kind: 'glb', url: './models/LittlestTokyo.glb', tip: 'Draco 压缩示例模型（71 部件）' },
   ];
   App.FAVORITES = FAVORITES;
