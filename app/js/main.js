@@ -159,8 +159,8 @@
       if (App._multiPivotActive && App._multiPivotActive()) App._teardownMultiPivot();
       tctrl.visible = false; tctrl.enabled = false;
       boxHelper.visible = false;
-      /* 记录进入预览前每个物体的姿态：退出时精确回到编辑状态
-         （弹跳等动画的第一帧在空中，复位到 t=0 关键帧≠回到原位） */
+      /* 记录进入预览前每个物体的完整状态：退出时精确回到编辑状态
+         （姿态 + 材质/显隐——「变成某颜色」「显示↔隐藏」等交互只在预览沙盒里生效） */
       App._prePreviewPose = {};
       App.entries.forEach(function (e) {
         const o = e.object3D;
@@ -168,6 +168,20 @@
           p: o.position.toArray(),
           r: [o.rotation.x, o.rotation.y, o.rotation.z],
           s: o.scale.toArray(),
+          visible: o.visible,
+          mats: App.entryMaterials(e).map(function (m) {
+            return {
+              color: m.color ? m.color.getHex() : null,
+              emissive: m.emissive ? m.emissive.getHex() : null,
+              emissiveIntensity: m.emissiveIntensity != null ? m.emissiveIntensity : null,
+              opacity: m.opacity != null ? m.opacity : null,
+              transparent: !!m.transparent,
+              depthWrite: m.depthWrite !== false,
+              metalness: m.metalness != null ? m.metalness : null,
+              roughness: m.roughness != null ? m.roughness : null,
+              map: m.map || null,
+            };
+          }),
         };
       });
       App.playing = App.entries.some(App.entryHasAnim);
@@ -185,7 +199,8 @@
       App.playing = false;
       App.setTime(0);
       App.setSpotBeamsVisible(true);   /* 退出预览：恢复光束锥辅助显示 */
-      /* 退出预览：恢复进入前的编辑姿态（比复位到关键帧首帧更符合直觉） */
+      /* 退出预览：恢复进入前的完整编辑状态（姿态 + 材质 + 显隐），交互改动不落盘 */
+      if (App._tweens) App._tweens.length = 0;   // 掐掉还在飞的颜色/抖动补间
       const poseMap = App._prePreviewPose || {};
       Object.keys(poseMap).forEach(function (id) {
         const e = App.entryById(id);
@@ -194,6 +209,21 @@
         e.object3D.position.fromArray(s.p);
         e.object3D.rotation.set(s.r[0], s.r[1], s.r[2]);
         e.object3D.scale.fromArray(s.s);
+        if (s.visible !== undefined) e.object3D.visible = s.visible;
+        if (s.mats) {
+          App.entryMaterials(e).forEach(function (m, i) {
+            const ms = s.mats[i];
+            if (!ms) return;
+            if (ms.color != null && m.color) m.color.setHex(ms.color);
+            if (ms.emissive != null && m.emissive) m.emissive.setHex(ms.emissive);
+            if (ms.emissiveIntensity != null) m.emissiveIntensity = ms.emissiveIntensity;
+            if (ms.opacity != null) { m.opacity = ms.opacity; m.transparent = ms.transparent; m.depthWrite = ms.depthWrite; }
+            if (ms.metalness != null) m.metalness = ms.metalness;
+            if (ms.roughness != null) m.roughness = ms.roughness;
+            if (ms.map !== undefined) m.map = ms.map || null;
+            m.needsUpdate = true;
+          });
+        }
       });
       App._prePreviewPose = null;
       App.updateTransformPanel();
