@@ -8,6 +8,7 @@
     click:    '有人点击它',
     dblclick: '双击它',
     hover:    '鼠标悬停它',
+    hoverOut: '鼠标移开它',
     load:     '场景加载后',
   };
   const ACTIONS = {
